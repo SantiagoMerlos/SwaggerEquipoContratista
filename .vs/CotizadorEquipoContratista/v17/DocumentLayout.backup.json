@@ -7,16 +7,16 @@
       "RelativeMoniker": "D:0:0:{59266E7D-F733-48F5-8DF5-E7D08F76D989}|CotizadorEquipoContratista.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{59266E7D-F733-48F5-8DF5-E7D08F76D989}|CotizadorEquipoContratista.csproj|c:\\dev\\opcionseguros\\swagerbancomacro\\cotizadorequipocontratista\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{59266E7D-F733-48F5-8DF5-E7D08F76D989}|CotizadorEquipoContratista.csproj|solutionrelative:properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{59266E7D-F733-48F5-8DF5-E7D08F76D989}|CotizadorEquipoContratista.csproj|c:\\dev\\opcionseguros\\swagerbancomacro\\cotizadorequipocontratista\\models\\cotizacionresponsemodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{59266E7D-F733-48F5-8DF5-E7D08F76D989}|CotizadorEquipoContratista.csproj|solutionrelative:models\\cotizacionresponsemodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{59266E7D-F733-48F5-8DF5-E7D08F76D989}|CotizadorEquipoContratista.csproj|c:\\dev\\opcionseguros\\swagerbancomacro\\cotizadorequipocontratista\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{59266E7D-F733-48F5-8DF5-E7D08F76D989}|CotizadorEquipoContratista.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{59266E7D-F733-48F5-8DF5-E7D08F76D989}|CotizadorEquipoContratista.csproj|c:\\dev\\opcionseguros\\swagerbancomacro\\cotizadorequipocontratista\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{59266E7D-F733-48F5-8DF5-E7D08F76D989}|CotizadorEquipoContratista.csproj|solutionrelative:properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -110,20 +110,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "CotizacionResponseModels.cs",
               "DocumentMoniker": "C:\\Dev\\OpcionSeguros\\swagerBancoMacro\\CotizadorEquipoContratista\\Models\\CotizacionResponseModels.cs",
               "RelativeDocumentMoniker": "Models\\CotizacionResponseModels.cs",
               "ToolTip": "C:\\Dev\\OpcionSeguros\\swagerBancoMacro\\CotizadorEquipoContratista\\Models\\CotizacionResponseModels.cs",
               "RelativeToolTip": "Models\\CotizacionResponseModels.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAYwA0AAAA3AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-05T18:15:58.031Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-05T18:15:58.031Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Dev\\OpcionSeguros\\swagerBancoMacro\\CotizadorEquipoContratista\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -141,14 +140,14 @@
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Dev\\OpcionSeguros\\swagerBancoMacro\\CotizadorEquipoContratista\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAEwAAAAAAAAAAAAowGcAAAA4AAAAAAAAAA==",
+              "ViewState": "AgIAACUAAAAAAAAAAAAowDAAAABvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-04T23:51:36.255Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "launchSettings.json",
               "DocumentMoniker": "C:\\Dev\\OpcionSeguros\\swagerBancoMacro\\CotizadorEquipoContratista\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "Properties\\launchSettings.json",
@@ -156,8 +155,7 @@
               "RelativeToolTip": "Properties\\launchSettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-11-05T00:15:30.729Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-05T00:15:30.729Z"
             }
           ]
         },
