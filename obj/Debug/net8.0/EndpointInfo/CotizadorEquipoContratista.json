@@ -1,0 +1,227 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API Cotización Equipos Contratistas",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/Cotizacion/RegistrarMacro": {
+      "post": {
+        "tags": [
+          "CotizadorEquipoContratista"
+        ],
+        "summary": "Registrar cotización de equipos contratistas",
+        "description": "Envía una cotización a la API real y devuelve el resultado del registro.",
+        "operationId": "RegistrarMacro",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CotizacionEquipoContratistaModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Respuesta exitosa del registro.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Cotizacion/GetToken": {
+      "get": {
+        "tags": [
+          "CotizadorEquipoContratista"
+        ],
+        "summary": "Obtiene un token desde la API",
+        "description": "Llama a la API CotizacionEquipoContratistaApi/GetToken para obtener un token válido.",
+        "operationId": "GetToken",
+        "parameters": [
+          {
+            "name": "X-API-KEY",
+            "in": "header",
+            "description": "API Key requerida para acceder al token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Cotizacion": {
+        "type": "object",
+        "properties": {
+          "asegurado": {
+            "type": "string",
+            "nullable": true
+          },
+          "cuit": {
+            "type": "string",
+            "nullable": true
+          },
+          "domicilio": {
+            "type": "string",
+            "nullable": true
+          },
+          "organizador": {
+            "type": "string",
+            "nullable": true
+          },
+          "productor": {
+            "type": "string",
+            "nullable": true
+          },
+          "provincia": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleOrganizador": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CotizacionEquipoContratistaModel": {
+        "type": "object",
+        "properties": {
+          "cotizacion": {
+            "$ref": "#/components/schemas/Cotizacion"
+          },
+          "eContratista": {
+            "$ref": "#/components/schemas/EContratista"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EContratista": {
+        "type": "object",
+        "properties": {
+          "actidadId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "actividad": {
+            "type": "string",
+            "nullable": true
+          },
+          "amortizacion": {
+            "type": "string",
+            "nullable": true
+          },
+          "caracteristicas": {
+            "type": "string",
+            "nullable": true
+          },
+          "cobertura": {
+            "type": "string",
+            "nullable": true
+          },
+          "desde": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hasta": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hastaTxt": {
+            "type": "string",
+            "nullable": true
+          },
+          "id_Tasas": {
+            "type": "string",
+            "nullable": true
+          },
+          "modelo": {
+            "type": "string",
+            "nullable": true
+          },
+          "moneda": {
+            "type": "string",
+            "nullable": true
+          },
+          "operacion": {
+            "type": "string",
+            "nullable": true
+          },
+          "pais": {
+            "type": "string",
+            "nullable": true
+          },
+          "porcAsegurado": {
+            "type": "string",
+            "nullable": true
+          },
+          "raltura": {
+            "type": "string",
+            "nullable": true
+          },
+          "rcalle": {
+            "type": "string",
+            "nullable": true
+          },
+          "rlocalidad": {
+            "type": "string",
+            "nullable": true
+          },
+          "rprovincia": {
+            "type": "string",
+            "nullable": true
+          },
+          "suma": {
+            "type": "number",
+            "format": "double"
+          },
+          "sumaPlCollder": {
+            "type": "number",
+            "format": "double"
+          },
+          "tipocotizacion": {
+            "type": "string",
+            "nullable": true
+          },
+          "confirmacion": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Void": {
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "Ingrese 'Bearer' seguido de su token JWT.",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
+}
