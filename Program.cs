@@ -1,6 +1,8 @@
 ﻿using CotizadorEquipoContratista.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Any;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,18 +42,50 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapPost("/api/Cotizacion/RegistrarMacro",
-    async ([FromBody] CotizacionEquipoContratistaModel paramItem) =>
+    async (HttpRequest request, [FromBody] CotizacionEquipoContratistaModel paramItem) =>
     {
         try
         {
             using var client = new HttpClient();
-            //var url = "https://localhost:5041/api/Cotizacion/RegistrarMacro";
-            var url = "https://www.opcionseguros.seg.ar/brokersdev/api/CotizacionEquipoContratistaApi/Registrar";
+            var url = "http://localhost:32677/api/CotizacionEquipoContratistaApi/RegistrarMacro";
+           // var url = "https://www.opcionseguros.seg.ar/brokersdev/api/CotizacionEquipoContratistaApi/Registrar";
+
+            if (request.Headers.TryGetValue("Authorization", out var authHeader))
+            {
+                var authHeaderValue = authHeader.ToString();
+                
+                if (AuthenticationHeaderValue.TryParse(authHeaderValue, out var parsedHeader))
+                {
+                    if (!string.IsNullOrEmpty(parsedHeader.Parameter))
+                    {
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", parsedHeader.Parameter);
+                    }
+                    else if (!string.IsNullOrEmpty(parsedHeader.Scheme) && 
+                             parsedHeader.Scheme != "Bearer" && parsedHeader.Scheme != "Basic")
+                    {
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", parsedHeader.Scheme);
+                    }
+                }
+                else if (authHeaderValue.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) || 
+                         authHeaderValue.StartsWith("bearer ", StringComparison.OrdinalIgnoreCase))
+                {
+                    var token = authHeaderValue.Substring(7).Trim();
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
+                }
+            }
 
             var response = await client.PostAsJsonAsync(url, paramItem);
             var content = await response.Content.ReadAsStringAsync();
 
-            return Results.Content(content, "application/json");
+            // Reenviar el código de estado HTTP y el contenido de la respuesta
+            return Results.Content(
+                content,
+                "application/json",
+                statusCode: (int)response.StatusCode
+            );
         }
         catch (Exception ex)
         {
@@ -85,33 +119,136 @@ app.MapPost("/api/Cotizacion/RegistrarMacro",
     {
         Description = "Respuesta exitosa del registro.",
         Content =
-    {
-        ["application/json"] = new OpenApiMediaType
         {
-            Schema = new OpenApiSchema
+            ["application/json"] = new OpenApiMediaType
             {
-                Type = "object",
-                Properties = new Dictionary<string, OpenApiSchema>
+                Schema = new OpenApiSchema
                 {
-                    ["draw"] = new OpenApiSchema { Type = "integer" },
-                    ["recordsFiltered"] = new OpenApiSchema { Type = "integer" },
-                    ["recordsTotal"] = new OpenApiSchema { Type = "integer" },
-                    ["message"] = new OpenApiSchema { Type = "string" },
-                    ["isError"] = new OpenApiSchema { Type = "boolean" },
-                    ["showMessage"] = new OpenApiSchema { Type = "boolean" },
-                    ["data"] = new OpenApiSchema
+                    Reference = new OpenApiReference
                     {
-                        Type = "object",
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.Schema,
-                            Id = nameof(SysCotizacionEquiposContratistasResult)
-                        }
+                        Type = ReferenceType.Schema,
+                        Id = nameof(CotizacionResponse)
                     }
+                },
+                Example = new OpenApiObject
+                {
+                    ["draw"] = new OpenApiInteger(0),
+                    ["recordsFiltered"] = new OpenApiInteger(0),
+                    ["recordsTotal"] = new OpenApiInteger(0),
+                    ["data"] = new OpenApiObject
+                    {
+                        ["Prima"] = new OpenApiString("0"),
+                        ["Total"] = new OpenApiString("0"),
+                        ["Couta"] = new OpenApiDouble(0),
+                        ["UrlFile"] = new OpenApiString("")
+                    },
+                    ["message"] = new OpenApiString(""),
+                    ["isError"] = new OpenApiBoolean(false),
+                    ["showMessage"] = new OpenApiBoolean(false)
                 }
             }
         }
-    }
+    };
+    
+    // Agregar respuestas de error
+    operation.Responses["401"] = new OpenApiResponse
+    {
+        Description = "No autorizado - Token ausente o inválido.",
+        Content =
+        {
+            ["application/json"] = new OpenApiMediaType
+            {
+                Schema = new OpenApiSchema
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.Schema,
+                        Id = nameof(TokenResponse)
+                    }
+                },
+                Example = new OpenApiObject
+                {
+                    ["Data"] = new OpenApiNull(),
+                    ["Message"] = new OpenApiString("Acceso no autorizado: token inválido"),
+                    ["IsError"] = new OpenApiBoolean(true)
+                }
+            }
+        }
+    };
+    
+    operation.Responses["400"] = new OpenApiResponse
+    {
+        Description = "Solicitud incorrecta - No se pudo registrar la cotización.",
+        Content =
+        {
+            ["application/json"] = new OpenApiMediaType
+            {
+                Schema = new OpenApiSchema
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.Schema,
+                        Id = nameof(TokenResponse)
+                    }
+                },
+                Example = new OpenApiObject
+                {
+                    ["Data"] = new OpenApiNull(),
+                    ["Message"] = new OpenApiString("No se pudo registrar la cotización"),
+                    ["IsError"] = new OpenApiBoolean(true)
+                }
+            }
+        }
+    };
+    
+    operation.Responses["404"] = new OpenApiResponse
+    {
+        Description = "No encontrado - No se encontró la cotización registrada.",
+        Content =
+        {
+            ["application/json"] = new OpenApiMediaType
+            {
+                Schema = new OpenApiSchema
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.Schema,
+                        Id = nameof(TokenResponse)
+                    }
+                },
+                Example = new OpenApiObject
+                {
+                    ["Data"] = new OpenApiNull(),
+                    ["Message"] = new OpenApiString("No se encontró la cotización registrada"),
+                    ["IsError"] = new OpenApiBoolean(true)
+                }
+            }
+        }
+    };
+    
+    operation.Responses["500"] = new OpenApiResponse
+    {
+        Description = "Error interno del servidor.",
+        Content =
+        {
+            ["application/json"] = new OpenApiMediaType
+            {
+                Schema = new OpenApiSchema
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.Schema,
+                        Id = nameof(TokenResponse)
+                    }
+                },
+                Example = new OpenApiObject
+                {
+                    ["Data"] = new OpenApiNull(),
+                    ["Message"] = new OpenApiString("Error interno del servidor"),
+                    ["IsError"] = new OpenApiBoolean(true)
+                }
+            }
+        }
     };
 
     return operation;
@@ -158,6 +295,33 @@ app.MapGet("/api/Cotizacion/GetToken", async (HttpContext context) =>
             Required = true,
             Schema = new Microsoft.OpenApi.Models.OpenApiSchema { Type = "string" },
             Description = "API Key requerida para acceder al token"
+        }
+    };
+    operation.Responses["200"] = new OpenApiResponse
+    {
+        Description = "Token obtenido exitosamente.",
+        Content =
+        {
+            ["application/json"] = new OpenApiMediaType
+            {
+                Schema = new OpenApiSchema
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.Schema,
+                        Id = nameof(TokenResponse)
+                    }
+                },
+                Example = new OpenApiObject
+                {
+                    ["Data"] = new OpenApiObject
+                    {
+                        ["token"] = new OpenApiString("279e01c8-9d90-42f4-83ed-b558ed31342c")
+                    },
+                    ["Message"] = new OpenApiString(""),
+                    ["IsError"] = new OpenApiBoolean(false)
+                }
+            }
         }
     };
     return operation;
