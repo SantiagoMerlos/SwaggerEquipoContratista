@@ -3,14 +3,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Any;
 using System.Net.Http.Headers;
+using Microsoft.OpenApi.Interfaces;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var apiBase = builder.Configuration["apiBase"] ?? throw new InvalidOperationException("Error ApiBase");
+var apiKey = builder.Configuration["ApiKey"] ?? throw new InvalidOperationException("Error ApiKey");
 
 // Swagger configuration
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "API Cotización Equipos Contratistas", Version = "v1" });
+    
+    c.CustomSchemaIds(type => type.Name);
+    
+    c.UseAllOfToExtendReferenceSchemas();
+    
+    c.DocumentFilter<SchemaRegistrationFilter>();
+    
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -47,8 +59,7 @@ app.MapPost("/api/Cotizacion/RegistrarMacro",
         try
         {
             using var client = new HttpClient();
-            var url = "http://localhost:32677/api/CotizacionEquipoContratistaApi/RegistrarMacro";
-           // var url = "https://www.opcionseguros.seg.ar/brokersdev/api/CotizacionEquipoContratistaApi/Registrar";
+            var url = $"{apiBase}CotizacionEquipoContratistaApi/RegistrarMacro";
 
             if (request.Headers.TryGetValue("Authorization", out var authHeader))
             {
@@ -150,7 +161,6 @@ app.MapPost("/api/Cotizacion/RegistrarMacro",
         }
     };
     
-    // Agregar respuestas de error
     operation.Responses["401"] = new OpenApiResponse
     {
         Description = "No autorizado - Token ausente o inválido.",
@@ -256,18 +266,16 @@ app.MapPost("/api/Cotizacion/RegistrarMacro",
 
 
 
-const string ApiKey = "prueba"; 
-
 app.MapGet("/api/Cotizacion/GetToken", async (HttpContext context) =>
 {
 
-    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey) || providedKey != ApiKey)
+    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey) || providedKey != apiKey)
     {
         return Results.Unauthorized();
     }
 
     using var client = new HttpClient();
-    var url = "http://localhost:32677/api/CotizacionEquipoContratistaApi/GetToken";
+    var url = $"{apiBase}CotizacionEquipoContratistaApi/GetToken";
 
     try
     {
@@ -395,4 +403,66 @@ public class TokenResponse
     public object Data { get; set; }
     public string Message { get; set; }
     public bool IsError { get; set; }
+}
+
+public class SchemaRegistrationFilter : IDocumentFilter
+{
+    public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
+    {
+        if (!swaggerDoc.Components.Schemas.ContainsKey(nameof(TokenResponse)))
+        {
+            swaggerDoc.Components.Schemas.Add(nameof(TokenResponse), new OpenApiSchema
+            {
+                Type = "object",
+                Properties = new Dictionary<string, OpenApiSchema>
+                {
+                    ["Data"] = new OpenApiSchema { Type = "object", Nullable = true },
+                    ["Message"] = new OpenApiSchema { Type = "string", Nullable = true },
+                    ["IsError"] = new OpenApiSchema { Type = "boolean" }
+                }
+            });
+        }
+
+        if (!swaggerDoc.Components.Schemas.ContainsKey(nameof(CotizacionResponse)))
+        {
+            swaggerDoc.Components.Schemas.Add(nameof(CotizacionResponse), new OpenApiSchema
+            {
+                Type = "object",
+                Properties = new Dictionary<string, OpenApiSchema>
+                {
+                    ["Draw"] = new OpenApiSchema { Type = "integer", Format = "int32" },
+                    ["RecordsFiltered"] = new OpenApiSchema { Type = "integer", Format = "int32" },
+                    ["RecordsTotal"] = new OpenApiSchema { Type = "integer", Format = "int32" },
+                    ["Data"] = new OpenApiSchema 
+                    { 
+                        Type = "object", 
+                        Nullable = true,
+                        Properties = new Dictionary<string, OpenApiSchema>
+                        {
+                            ["Prima"] = new OpenApiSchema { Type = "string", Nullable = true },
+                            ["Total"] = new OpenApiSchema { Type = "string", Nullable = true },
+                            ["Couta"] = new OpenApiSchema { Type = "number", Format = "decimal", Nullable = true },
+                            ["UrlFile"] = new OpenApiSchema { Type = "string", Nullable = true }
+                        }
+                    },
+                    ["Message"] = new OpenApiSchema { Type = "string", Nullable = true },
+                    ["IsError"] = new OpenApiSchema { Type = "boolean" },
+                    ["ShowMessage"] = new OpenApiSchema { Type = "boolean" }
+                }
+            });
+        }
+
+        if (!swaggerDoc.Components.Schemas.ContainsKey(nameof(CotizacionEquipoContratistaModel)))
+        {
+            swaggerDoc.Components.Schemas.Add(nameof(CotizacionEquipoContratistaModel), new OpenApiSchema
+            {
+                Type = "object",
+                Properties = new Dictionary<string, OpenApiSchema>
+                {
+                    ["Cotizacion"] = new OpenApiSchema { Type = "object", Nullable = true },
+                    ["EContratista"] = new OpenApiSchema { Type = "object", Nullable = true }
+                }
+            });
+        }
+    }
 }
