@@ -107,7 +107,6 @@ app.MapPost("/api/Cotizacion/RegistrarMacro",
 .WithOpenApi(operation =>
 {
     operation.Summary = "Registrar cotización de equipos contratistas";
-    operation.Description = "Envía una cotización a la API real y devuelve el resultado del registro.";
     operation.RequestBody = new OpenApiRequestBody
     {
         Required = true,
@@ -294,7 +293,6 @@ app.MapGet("/api/Cotizacion/GetToken", async (HttpContext context) =>
 .WithOpenApi(operation =>
 {
     operation.Summary = "Obtiene un token desde la API";
-    operation.Description = "Llama a la API CotizacionEquipoContratistaApi/GetToken para obtener un token válido.";
     operation.Parameters = new List<Microsoft.OpenApi.Models.OpenApiParameter>
     {
         new()
@@ -336,75 +334,220 @@ app.MapGet("/api/Cotizacion/GetToken", async (HttpContext context) =>
     return operation;
 });
 
+app.MapGet("/api/Cotizacion/GetUnitTypeList", async (HttpContext context) =>
+{
+
+    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey) || providedKey != apiKey)
+    {
+        return Results.Unauthorized();
+    }
+
+    using var client = new HttpClient();
+    var url = $"{apiBase}GeneralApi/ListarTipoUnidad";
+
+    try
+    {
+        var response = await client.GetAsync(url);
+        var content = await response.Content.ReadAsStringAsync();
+
+        return Results.Content(content, "application/json");
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Error al llamar al servicio GetUnitTypeList: {ex.Message}", statusCode: 500);
+    }
+})
+.WithName("GetUnitTypeList")
+.WithOpenApi(operation =>
+{
+    operation.Summary = "Obtiene el listado de los tipos de unidad";
+    operation.Parameters = new List<Microsoft.OpenApi.Models.OpenApiParameter>
+    {
+        new()
+        {
+            Name = "X-API-KEY",
+            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            Required = true,
+            Schema = new Microsoft.OpenApi.Models.OpenApiSchema { Type = "string" },
+            Description = "API Key requerida para acceder al listado"
+        }
+    };
+    operation.Responses["200"] = new OpenApiResponse
+    {
+        Description = "Listado obtenido exitosamente.",
+        Content =
+        {
+            ["application/json"] = new OpenApiMediaType
+            {
+                Schema = new OpenApiSchema
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.Schema,
+                        Id = nameof(TokenResponse)
+                    }
+                },
+                Example = new OpenApiObject
+                {
+                    ["data"] = new OpenApiObject
+                    {
+                        ["Id_Tasas"] = new OpenApiDouble(87),
+                        ["Unidad"] = new OpenApiString("arados"),
+                        ["Todoriesgo"] = new OpenApiDouble(8.1),
+                        ["Danostotales"] = new OpenApiDouble(7.3),
+                        ["Activo"] = new OpenApiDouble(1)
+                    }
+                }
+            }
+        }
+    };
+    return operation;
+});
+
+
+app.MapGet("/api/Cotizacion/GetListProvinces", async (HttpContext context) =>
+{
+
+    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey) || providedKey != apiKey)
+    {
+        return Results.Unauthorized();
+    }
+
+    using var client = new HttpClient();
+    var url = $"{apiBase}GeneralApi/ListarProvincia";
+
+    try
+    {
+        var response = await client.GetAsync(url);
+        var content = await response.Content.ReadAsStringAsync();
+
+        return Results.Content(content, "application/json");
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Error al llamar al servicio GetListProvinces: {ex.Message}", statusCode: 500);
+    }
+})
+.WithName("GetListProvinces")
+.WithOpenApi(operation =>
+{
+    operation.Summary = "Obtiene el listado de las provincias";
+    operation.Parameters = new List<Microsoft.OpenApi.Models.OpenApiParameter>
+    {
+        new()
+        {
+            Name = "X-API-KEY",
+            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            Required = true,
+            Schema = new Microsoft.OpenApi.Models.OpenApiSchema { Type = "string" },
+            Description = "API Key requerida para acceder al listado"
+        }
+    };
+    operation.Responses["200"] = new OpenApiResponse
+    {
+        Description = "Listado obtenido exitosamente.",
+        Content =
+        {
+            ["application/json"] = new OpenApiMediaType
+            {
+                Schema = new OpenApiSchema
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.Schema,
+                        Id = nameof(TokenResponse)
+                    }
+                },
+                Example = new OpenApiObject
+                {
+                    ["data"] = new OpenApiObject
+                    {
+                        ["Id_Jurisdiccion"] = new OpenApiDouble(53),
+                        ["Jurisdiccion"] = new OpenApiString("JUJUY"),
+                        ["Iibb"] = new OpenApiDouble(8.1),
+                        ["Sellados"] = new OpenApiDouble(7.3),
+                        ["Alicuotas"] = new OpenApiString("50"),
+                        ["Activo"] = new OpenApiDouble(1)
+                    }
+                }
+            }
+        }
+    };
+    return operation;
+});
+
+app.MapGet("/api/Cotizacion/GetAmountMax", async (HttpContext context) =>
+{
+
+    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey) || providedKey != apiKey)
+    {
+        return Results.Unauthorized();
+    }
+
+    using var client = new HttpClient();
+    var url = $"{apiBase}GeneralApi/ObtenerMontoMax?montoid=1";
+
+    try
+    {
+        var response = await client.GetAsync(url);
+        var content = await response.Content.ReadAsStringAsync();
+
+        return Results.Content(content, "application/json");
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Error al llamar al servicio GetAmountMax: {ex.Message}", statusCode: 500);
+    }
+})
+.WithName("GetAmountMax")
+.WithOpenApi(operation =>
+{
+    operation.Summary = "Obtiene el monto maximo permitido del cotizador";
+    operation.Parameters = new List<Microsoft.OpenApi.Models.OpenApiParameter>
+    {
+        new()
+        {
+            Name = "X-API-KEY",
+            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            Required = true,
+            Schema = new Microsoft.OpenApi.Models.OpenApiSchema { Type = "string" },
+            Description = "API Key requerida para acceder al monto"
+        }
+    };
+    operation.Responses["200"] = new OpenApiResponse
+    {
+        Description = "monto obtenido exitosamente.",
+        Content =
+        {
+            ["application/json"] = new OpenApiMediaType
+            {
+                Schema = new OpenApiSchema
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.Schema,
+                        Id = nameof(TokenResponse)
+                    }
+                },
+                Example = new OpenApiObject
+                {
+                    ["data"] = new OpenApiObject
+                    {
+                        ["Montoid"] = new OpenApiDouble(53),
+                        ["Cotizador"] = new OpenApiString("Equipo Contratistas"),
+                        ["Monto_Max_Pesos"] = new OpenApiDouble(899999.0),
+                        ["Monto_Max_Dolares"] = new OpenApiDouble(20000000),
+                        ["Fecha"] = new OpenApiString("2025-01-16T14:17:29.457")
+                    }
+                }
+            }
+        }
+    };
+    return operation;
+});
 
 app.Run();
 
-
-
-public class CotizacionEquipoContratistaModel
-{
-    public Cotizacion Cotizacion { get; set; }
-    public EContratista EContratista { get; set; }
-}
-
-public class Cotizacion
-{
-    public string Asegurado { get; set; }
-    public string Cuit { get; set; }
-    public string Domicilio { get; set; }
-    public string Organizador { get; set; }
-    public string Productor { get; set; }
-    public string Provincia { get; set; }
-    public bool VisibleOrganizador { get; set; }
-}
-
-public class EContratista
-{
-    public int ActidadId { get; set; }
-    public string Actividad { get; set; }
-    public string Amortizacion { get; set; }
-    public string Caracteristicas { get; set; }
-    public string Cobertura { get; set; }
-    public DateTime Desde { get; set; }
-    public DateTime Hasta { get; set; }
-    public string HastaTxt { get; set; }
-    public string Id_Tasas { get; set; }
-    public string Modelo { get; set; }
-    public string Moneda { get; set; }
-    public string Operacion { get; set; }
-    public string Pais { get; set; }
-    public string PorcAsegurado { get; set; }
-    public string Raltura { get; set; }
-    public string Rcalle { get; set; }
-    public string Rlocalidad { get; set; }
-    public string Rprovincia { get; set; }
-    public decimal Suma { get; set; }
-    public decimal SumaPlCollder { get; set; }
-    public string Tipocotizacion { get; set; }
-    public int Confirmacion { get; set; }
-}
-
-public class TokenResponse
-{
-    public TokenResponse() { }
-
-    public TokenResponse(object data)
-    {
-        Data = data;
-        IsError = false;
-        Message = string.Empty;
-    }
-
-    public TokenResponse(string message, bool isError = true)
-    {
-        Message = message;
-        IsError = isError;
-    }
-
-    public object Data { get; set; }
-    public string Message { get; set; }
-    public bool IsError { get; set; }
-}
 
 public class SchemaRegistrationFilter : IDocumentFilter
 {
