@@ -275,6 +275,7 @@ app.MapGet("/api/Cotizacion/GetToken", async (HttpContext context) =>
     }
 
     using var client = new HttpClient();
+    client.DefaultRequestHeaders.Add("X-API-KEY", providedKey.ToString());
     var url = $"{apiBase}CotizacionEquipoContratistaApi/GetToken";
 
     try
