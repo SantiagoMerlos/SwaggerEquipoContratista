@@ -1,4 +1,5 @@
 ﻿using CotizadorEquipoContratista.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Any;
@@ -267,24 +268,24 @@ app.MapPost("/api/Cotizacion/RegistrarMacro",
 
 app.MapGet("/api/Cotizacion/GetToken", async (HttpContext context) =>
 {
-    // Intentar obtener el header X-API-KEY (case-insensitive)
-    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey))
+    IResult UnauthorizedResult(string message) =>
+        Results.Json(
+            new TokenResponse(message),
+            statusCode: StatusCodes.Status401Unauthorized);
+
+    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey) &&
+        !context.Request.Headers.TryGetValue("x-api-key", out providedKey))
     {
-        // Intentar con minúsculas también
-        if (!context.Request.Headers.TryGetValue("x-api-key", out providedKey))
-        {
-            return Results.Unauthorized();
-        }
+        return UnauthorizedResult("Debe enviar el encabezado X-API-KEY.");
     }
 
     var apiKeyValue = providedKey.ToString().Trim();
     if (apiKeyValue != apiKey)
     {
-        return Results.Unauthorized();
+        return UnauthorizedResult("La API Key enviada no es válida.");
     }
 
     using var client = new HttpClient();
-    // Asegurar que el header se envíe correctamente
     client.DefaultRequestHeaders.Clear();
     client.DefaultRequestHeaders.Add("X-API-KEY", apiKeyValue);
     var url = $"{apiBase}CotizacionEquipoContratistaApi/GetToken";
@@ -294,19 +295,14 @@ app.MapGet("/api/Cotizacion/GetToken", async (HttpContext context) =>
         var response = await client.GetAsync(url);
         var content = await response.Content.ReadAsStringAsync();
 
-        // Verificar el código de estado HTTP
         if (!response.IsSuccessStatusCode)
         {
-            // Si la respuesta no es exitosa, devolver el error con el mismo código de estado
             return Results.Content(
                 content,
                 "application/json",
                 statusCode: (int)response.StatusCode
             );
         }
-
-        // Si el status es 200 pero el contenido indica un error, devolverlo también
-        // Esto maneja el caso donde el servidor devuelve 200 pero con un error en el JSON
         return Results.Content(content, "application/json");
     }
     catch (Exception ex)
@@ -635,3 +631,4 @@ public class SchemaRegistrationFilter : IDocumentFilter
         }
     }
 }
+
