@@ -358,9 +358,21 @@ app.MapGet("/api/Cotizacion/GetToken", async (HttpContext context) =>
 app.MapGet("/api/Cotizacion/GetUnitTypeList", async (HttpContext context) =>
 {
 
-    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey) || providedKey != apiKey)
+    IResult UnauthorizedResult(string message) =>
+     Results.Json(
+         new TokenResponse(message),
+         statusCode: StatusCodes.Status401Unauthorized);
+
+    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey) &&
+        !context.Request.Headers.TryGetValue("x-api-key", out providedKey))
     {
-        return Results.Unauthorized();
+        return UnauthorizedResult("Debe enviar el encabezado X-API-KEY.");
+    }
+
+    var apiKeyValue = providedKey.ToString().Trim();
+    if (apiKeyValue != apiKey)
+    {
+        return UnauthorizedResult("La API Key enviada no es válida.");
     }
 
     using var client = new HttpClient();
@@ -429,9 +441,21 @@ app.MapGet("/api/Cotizacion/GetUnitTypeList", async (HttpContext context) =>
 app.MapGet("/api/Cotizacion/GetListProvinces", async (HttpContext context) =>
 {
 
-    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey) || providedKey != apiKey)
+    IResult UnauthorizedResult(string message) =>
+     Results.Json(
+         new TokenResponse(message),
+         statusCode: StatusCodes.Status401Unauthorized);
+
+    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey) &&
+        !context.Request.Headers.TryGetValue("x-api-key", out providedKey))
     {
-        return Results.Unauthorized();
+        return UnauthorizedResult("Debe enviar el encabezado X-API-KEY.");
+    }
+
+    var apiKeyValue = providedKey.ToString().Trim();
+    if (apiKeyValue != apiKey)
+    {
+        return UnauthorizedResult("La API Key enviada no es válida.");
     }
 
     using var client = new HttpClient();
@@ -500,9 +524,21 @@ app.MapGet("/api/Cotizacion/GetListProvinces", async (HttpContext context) =>
 app.MapGet("/api/Cotizacion/GetAmountMax", async (HttpContext context) =>
 {
 
-    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey) || providedKey != apiKey)
+    IResult UnauthorizedResult(string message) =>
+     Results.Json(
+         new TokenResponse(message),
+         statusCode: StatusCodes.Status401Unauthorized);
+
+    if (!context.Request.Headers.TryGetValue("X-API-KEY", out var providedKey) &&
+        !context.Request.Headers.TryGetValue("x-api-key", out providedKey))
     {
-        return Results.Unauthorized();
+        return UnauthorizedResult("Debe enviar el encabezado X-API-KEY.");
+    }
+
+    var apiKeyValue = providedKey.ToString().Trim();
+    if (apiKeyValue != apiKey)
+    {
+        return UnauthorizedResult("La API Key enviada no es válida.");
     }
 
     using var client = new HttpClient();
