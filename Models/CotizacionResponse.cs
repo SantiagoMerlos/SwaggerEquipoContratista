@@ -15,7 +15,7 @@
     {
         public string Prima { get; set; }
         public string Total { get; set; }
-        public decimal? Couta { get; set; }
+        public decimal? Cuota { get; set; }
         public string UrlFile { get; set; }
     }
 

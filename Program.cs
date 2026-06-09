@@ -150,7 +150,7 @@ app.MapPost("/api/Cotizacion/RegistrarMacro",
                     {
                         ["Prima"] = new OpenApiString("0"),
                         ["Total"] = new OpenApiString("0"),
-                        ["Couta"] = new OpenApiDouble(0),
+                        ["Cuota"] = new OpenApiDouble(0),
                         ["UrlFile"] = new OpenApiString("")
                     },
                     ["message"] = new OpenApiString(""),
@@ -642,7 +642,7 @@ public class SchemaRegistrationFilter : IDocumentFilter
                         {
                             ["Prima"] = new OpenApiSchema { Type = "string", Nullable = true },
                             ["Total"] = new OpenApiSchema { Type = "string", Nullable = true },
-                            ["Couta"] = new OpenApiSchema { Type = "number", Format = "decimal", Nullable = true },
+                            ["Cuota"] = new OpenApiSchema { Type = "number", Format = "decimal", Nullable = true },
                             ["UrlFile"] = new OpenApiSchema { Type = "string", Nullable = true }
                         }
                     },

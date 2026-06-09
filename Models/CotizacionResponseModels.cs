@@ -46,7 +46,7 @@
         public string Actividad { get; set; }
         public string Prima { get; set; }
         public string Total { get; set; }
-        public decimal? Couta { get; set; }
+        public decimal? Cuota { get; set; }
         public string UbicacionRiesgoFull { get; set; }
         public string Clase { get; set; }
         public string AmortizacionDesc { get; set; }
