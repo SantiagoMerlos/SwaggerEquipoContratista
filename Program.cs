@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Any;
 using System.Net.Http.Headers;
 using Microsoft.OpenApi.Interfaces;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text.Json.Nodes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,6 +92,20 @@ app.MapPost("/api/Cotizacion/RegistrarMacro",
 
             var response = await client.PostAsJsonAsync(url, paramItem);
             var content = await response.Content.ReadAsStringAsync();
+
+            try
+            {
+                var json = JsonNode.Parse(content);
+                if (json?["data"] is JsonObject data &&
+                    data.Remove("Couta", out var cuota))
+                {
+                    data["Cuota"] = cuota;
+                    content = json.ToJsonString();
+                }
+            }
+            catch (System.Text.Json.JsonException)
+            {
+            }
 
             // Reenviar el código de estado HTTP y el contenido de la respuesta
             return Results.Content(
@@ -667,4 +682,3 @@ public class SchemaRegistrationFilter : IDocumentFilter
         }
     }
 }
-
